@@ -1,0 +1,43 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long int
+#define rep(i, st, ed) for (int i = st; i < ed; i++)
+// 1. all indexing that either it will be a 0 based or 1 based indexing >1 based
+// 2. what dp[i] is signifying=> done in code
+
+void solve()
+{
+    int n;
+    cin >> n;
+    vector<vector<int>> happiness(3, vector<int>(n, 0));
+    for (int i = 0; i < n; i++)
+        cin >> happiness[0][i] >> happiness[1][i] >> happiness[2][i];
+
+    vector<vector<int>> dp(3, vector<int>(n + 1, INT_MIN));
+    // dp[i][j]==> maimimum hapiness by doing i th activity on j th day
+
+    dp[0][n] = happiness[0][n - 1];
+    dp[1][n] = happiness[1][n - 1];
+    dp[2][n] = happiness[2][n - 1];
+
+    for (int i = n - 1; i > 0; i--)
+    {
+        dp[0][i] = happiness[0][i - 1] + max(dp[1][i + 1], dp[2][i + 1]);
+        dp[1][i] = happiness[1][i - 1] + max(dp[0][i + 1], dp[2][i + 1]);
+        dp[2][i] = happiness[2][i - 1] + max(dp[0][i + 1], dp[1][i + 1]);
+    }
+
+    cout << max({dp[0][1], dp[1][1], dp[2][1]}) << endl;
+    return;
+}
+
+int main()
+{
+    int tc;
+    // cin >> tc;
+    tc = 1;
+    while (tc--)
+    {
+        solve();
+    }
+}
