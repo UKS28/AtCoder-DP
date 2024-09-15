@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long int
+#define rep(i, st, ed) for (int i = st; i < ed; i++)
+// logic : for each node store the maximum lenght path ending on this node.
+// Approach:
+// step 1: sort the vertices in topological order
+// step 2: store the maximum path in this order
+// step 3: iterate through each and and find maximum length path ending on this node
+
+void solve()
+{
+    long long n, m;
+    cin >> n >> m;
+    vector<int> adj[n + 1];
+    vector<int> indegree(n + 1);
+    // 1.Store elements in adjacency list and store the indegree
+    rep(i, 0, m)
+    {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        indegree[v]++;
+    }
+
+    queue<int> q;
+    vector<int> longest_path(n + 1, 0);
+    rep(i, 1, n + 1) if (indegree[i] == 0)
+        q.push(i);
+
+    int res = 1;
+    while (q.empty() == false)
+    {
+        int node = q.front();
+        q.pop();
+
+        for (auto &itr : adj[node])
+        {
+            longest_path[itr] = max(longest_path[itr], longest_path[node] + 1);
+            res = max(res, longest_path[itr]);
+
+            indegree[itr]--;
+            if (indegree[itr] == 0)
+                q.push(itr);
+        }
+    }
+
+    cout << res << endl;
+}
+
+int main()
+{
+    int tc;
+    tc = 1;
+    // cin >> tc;
+    while (tc--)
+    {
+        solve();
+    }
+}
