@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long int
+#define rep(i, st, ed) for (int i = st; i < ed; i++)
+
+// Solution:
+// - indexing 1 based
+// - dp[i][j]-> probability of having i heads with j coins
+// - result will => sumation( d[i][n]) where i lies from (n+1)/2 to n
+void solve()
+{
+    long double n;
+    cin >> n;
+    vector<long double> v(n);
+    rep(i, 0, n)
+            cin >>
+        v[i];
+
+    vector<vector<long double>> dp(n + 1, vector<long double>(n + 1, 0));
+    //    dp[i][j]--> probability of having i heads with j coins
+    dp[0][0] = 1;
+
+    for (int i = 0; i <= n; i++)
+    {
+        for (int j = i; j <= n; j++)
+        {
+            if (i != j)
+                dp[i][j] = (1.0 - v[j - 1]) * dp[i][j - 1];
+
+            if (i > 0)
+            {
+                dp[i][j] += (v[j - 1]) * dp[i - 1][j - 1];
+            }
+        }
+    }
+
+    long double res = 0;
+    for (int i = (n + 1) / 2; i <= n; i++)
+    {
+        res += dp[i][n];
+    }
+    cout << fixed << setprecision(10) << res << endl;
+}
+
+int main()
+{
+    int tc;
+    tc = 1;
+    // cin >> tc;
+    while (tc--)
+    {
+        solve();
+    }
+}
