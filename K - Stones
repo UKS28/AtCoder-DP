@@ -1,0 +1,78 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long int
+#define rep(i, st, ed) for (int i = st; i < ed; i++)
+
+// try all the possibility if at any possibilty you can win then you r winner
+
+int fun(int k, int player, vector<int> &arr, vector<vector<int>> &memo)
+{
+    int winner = 1 - player;
+    for (int i = 0; i < arr.size(); i++)
+    {
+        // cout<<k<<endl;
+        if (k - arr[i] >= 0)
+        {
+            if (memo[k - arr[i]][1 - player] != -1)
+                winner = memo[k - arr[i]][1-player];
+            else
+                winner = fun(k - arr[i], 1 - player, arr, memo);
+            if (winner == player)
+                break;
+        }
+    }
+    return memo[k][player] = winner;
+}
+
+void solve()
+{
+    int k, n;
+    cin >> n >> k;
+    vector<int> v(n);
+
+    rep(i, 0, n) cin >> v[i];
+    vector<vector<int>> dp(k+1, vector<int>(2, 0));
+    // dp[i][j]-> winner when there are i stones left and its player jth turn
+    dp[0][0] = 1;
+    dp[0][1] = 0;
+
+//  no of stones
+    for (int i = 1; i <= k; i++)
+    {
+        // no of players
+        for (int j = 0; j < 2; j++)
+        {
+            int winner=1-j;
+            // no of elements in array
+            for (int k = 0; k < n; k++)
+            {
+                if(i-v[k]>=0)
+                {
+                    winner=dp[i-v[k]][1-j];
+
+                }
+                if(winner==j)break;
+            }
+            dp[i][j]=winner;
+        }
+    }
+
+    int res=dp[k][0];
+    if (res == 0)
+        cout << "First\n";
+    else
+        cout << "Second\n";
+    return ;
+
+}
+
+int main()
+{
+    int tc;
+    tc = 1;
+    // cin >> tc;
+    while (tc--)
+    {
+        solve();
+    }
+}
