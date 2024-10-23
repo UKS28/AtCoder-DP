@@ -1,0 +1,70 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long int
+#define rep(i, st, ed) for (int i = st; i < ed; i++)
+const long long mod = 1e9 + 7;
+
+// each node have 2 state what is th count when it is colored black and when is colored white and run dfs store the count
+// color: 1 is black and color: 0 is white
+// Consider the graph as tree rooted at 1,
+// Now
+// why DP: we can make state as if we mark this root of a subtree as white then what is count of subtree
+// res = res subtree1 (considering the root of subtree1(black)+ the root of subtree1(white))
+//                        *
+//       res subtree2 (considering the root of subtree2(black)+ the root of subtree2(white)) so on....
+
+long long fun(vector<int> adj[], int node, int color, vector<vector<long long>> &dp, vector<int> &vis)
+{
+    // mark the node visited
+    vis[node] = 1;
+    long long res = 1;
+    for (auto &itr : adj[node])
+    {
+        if (vis[itr] == 1)
+            continue;
+
+        // calculate for both black(if parent is white ) and white color and taking their sum
+        long long curr = 0;
+        curr = (curr + (dp[1 - color][itr] == -1 ? fun(adj, itr, 1 - color, dp, vis) : dp[1 - color][itr])) % mod;
+        if (color == 0)
+        {
+            curr = (curr + (dp[color][itr] == -1 ? fun(adj, itr, color, dp, vis) : dp[color][itr])) % mod;
+        }
+        // multiplying result for each child / subtree
+        res = (res * curr) % mod;
+    }
+    // for the second part of root as 1
+    vis[node] = 0;
+    return dp[color][node] = res;
+}
+
+void solve()
+{
+    int n;
+    cin >> n;
+    vector<int> adj[n + 1];
+    for (int i = 0; i < n - 1; i++)
+    {
+        int a, b;
+        cin >> a >> b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+    }
+
+    vector<vector<long long>> dp(2, vector<long long>(n + 1, -1));
+    vector<int> vis(n + 1, 0);
+    long long res1 = fun(adj, 1, 0, dp, vis);
+    long long res2 = fun(adj, 1, 1, dp, vis);
+    long long res = (res1 + res2) % mod;
+    cout << res << endl;
+}
+
+int main()
+{
+    int tc = 1;
+    // cin >> tc;
+    while (tc--)
+    {
+        solve();
+    }
+}
