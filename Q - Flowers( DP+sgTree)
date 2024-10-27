@@ -1,0 +1,90 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long int
+#define rep(i, st, ed) for (int i = st; i < ed; i++)
+const long long mod = 1e9 + 7;
+
+// SGTREE for calculating maximum element between range l to r with point update
+class sgTree
+{
+public:
+    vector<long long> Tree;
+    sgTree(int n)
+    {
+        Tree.resize(4 * n + 1);
+    }
+    void build(int si, int ss, int se, vector<long long> &dp)
+    {
+        if (ss == se)
+        {
+            Tree[si] = dp[ss];
+            return;
+        }
+        int mid = ss + (se - ss) / 2;
+        build(2 * si + 1, ss, mid, dp);
+        build(2 * si + 2, mid + 1, se, dp);
+        Tree[si] = max(Tree[2 * si + 1], Tree[2 * si + 2]);
+    }
+
+    void update(int si, int ss, int se, int idx, long long val)
+    {
+        if (ss == se)
+        {
+            Tree[si] = val;
+            return;
+        }
+        int mid = ss + (se - ss) / 2;
+        if (idx <= mid)
+            update(2 * si + 1, ss, mid, idx, val);
+        else
+            update(2 * si + 2, mid + 1, se, idx, val);
+        Tree[si] = max(Tree[2 * si + 1], Tree[2 * si + 2]);
+    }
+
+    long long query(int si, int ss, int se, int l, int h)
+    {
+        if (l > se || h < ss)
+            return -1e16;
+        if (ss >= l && se <= h)
+            return Tree[si];
+        int mid = ss + (se - ss) / 2;
+        return max(query(2 * si + 1, ss, mid, l, h), query(2 * si + 2, mid + 1, se, l, h));
+    }
+};
+
+void solve()
+{
+    int n;
+    cin >> n;
+    vector<long long> height(n), value(n);
+    for (int i = 0; i < n; i++)
+        cin >> height[i];
+    for (int i = 0; i < n; i++)
+        cin >> value[i];
+
+    vector<long long> dp(n + 1);
+    sgTree st(n + 1);
+    st.build(0, 0, n, dp);
+    long long ans = 0;
+    for (int i = 0; i < n; i++)
+    {
+        // if height[i] is my last element of final selected array
+        // 1. query :res=take out maximum element from 1 to height[i]
+        long long res = st.query(0, 0, n, 0, height[i] - 1);
+        // 2. update : dp[height[i]]=value[i]+res;
+        dp[height[i]] = value[i] + res;
+        ans = max(ans, dp[height[i]]);
+        st.update(0, 0, n, height[i], value[i] + res);
+    }
+    cout << ans << endl;
+}
+
+int main()
+{
+    int tc = 1;
+    cin >> tc;
+    while (tc--)
+    {
+        solve();
+    }
+}
