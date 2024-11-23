@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long int
+#define rep(i, st, ed) for (int i = st; i < ed; i++)
+const long long mod = 1e9 + 7;
+
+// dp[i]-> represent maimum possible sum when all the elements are divided
+long long fun(vector<vector<long long>> &v)
+{
+    int n = v.size();
+    // 111111.. n times
+    long long value = ((1 << n) - 1);
+    vector<long long> dp(value + 1);
+    // Step1: precomputing for each group the result
+    // represent a group in form bit , for eg : 1010 means 4th and 2nd are together in a group
+    for (long long mask = 1; mask <= value; mask++)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            if (!((mask >> i) & 1))
+                continue;
+            for (int j = i + 1; j < n; j++)
+            {
+                if (!((mask >> j) & 1))
+                    continue;
+                dp[mask] += v[i][j];
+            }
+        }
+    }
+
+    // Step 2:for each possible group exploring all the possible option of diving the group
+    // for eg, suppose we have for this grp 101110 then we can divide this into dp[101100] and dp[000110] , exploring all the options to divide the group
+    for (int mask = 1; mask <= value; mask++)
+    {
+        for (int s = mask; s > 0; s = ((s - 1) & mask))
+        {
+            dp[mask] = max(dp[mask], dp[s] + dp[s ^ mask]);
+        }
+    }
+    return dp[value];
+}
+void solve()
+{
+    int n;
+    cin >> n;
+    vector<vector<long long>> v(n, vector<long long>(n, 0));
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+            cin >> v[i][j];
+    }
+    long long res = fun(v);
+    cout << res << endl;
+}
+
+int main()
+{
+    int tc = 1;
+    //cin >> tc;
+    while (tc--)
+    {
+        solve();
+    }
+}
