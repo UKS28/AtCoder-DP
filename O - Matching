@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long int
+#define rep(i, st, ed) for (int i = st; i < ed; i++)
+const long long mod = 1e9 + 7;
+
+// represent each men with bits if a men is available then its bit will be switched,
+// run a loop check for each women if the compabiluty is matching and the men is available
+// then take the case otherwose ignore
+
+long long fun(vector<vector<int>> &compatibility, int women, long long men, vector<vector<long long>> &memo)
+{
+    if (women == 0)
+        return men == 0;
+    if (memo[women][men] != -1)
+        return memo[women][men];
+    int n = compatibility.size();
+    long long res = 0;
+    for (int i = 0; i < n; i++)
+    {
+        if ((men & (1 << i)) && compatibility[i][women - 1])
+        {
+            res = (res + fun(compatibility, women - 1, men ^ (1 << i), memo)) % mod;
+        }
+    }
+    return memo[women][men] = res;
+}
+
+void solve()
+{
+    long long n;
+    cin >> n;
+    vector<vector<int>> compatibility(n, vector<int>(n));
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cin >> compatibility[i][j];
+        }
+    }
+    long long men = ((1 << n) - 1);
+    vector<vector<long long>> memo(n + 1, vector<long long>(men + 1, -1));
+    cout << fun(compatibility, n, men, memo) << endl;
+}
+
+int main()
+{
+    int tc = 1;
+    // cin >> tc;
+    while (tc--)
+    {
+        solve();
+    }
+}
